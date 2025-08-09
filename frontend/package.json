@@ -1,0 +1,23 @@
+{
+    "name": "blog-frontend",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "axios": "^1.4.0",
+        "bootstrap": "^5.3.0",
+        "formik": "^2.2.9",
+        "react": "^18.2.0",
+        "react-bootstrap": "^2.7.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.4.0",
+        "yup": "^0.32.11"
+    },
+    "devDependencies": {
+        "vite": "^4.3.9",
+        "@vitejs/plugin-react": "^4.0.0"
+    }
+}
