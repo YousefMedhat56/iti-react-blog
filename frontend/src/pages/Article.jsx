@@ -1,51 +1,68 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import api from '../api';
-import { Container, Spinner, Alert } from 'react-bootstrap';
-import NotFound from '../components/NotFound';
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import api from "../api";
+import { Container, Spinner, Alert, Card } from "react-bootstrap";
+import NotFound from "../components/NotFound";
 
 function Article() {
-    const { id } = useParams();
-    const [article, setArticle] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const { id } = useParams();
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    api
+      .get(`/articles/${id}`)
+      .then((response) => {
+        setArticle(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        setError("Article not found");
+      });
+  }, [id]);
 
-    useEffect(() => {
-        api.get(`/articles/${id}`)
-            .then(response => {
+  const getFormattedDate = (dateString) => {
+    const articleDate = new Date(dateString);
+    return articleDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
-                setArticle(response.data);
-                setLoading(false);
-            })
-            .catch(error => {
-                setLoading(false);
-                setError('Article not found');
-            });
-    }, [id]);
-
-    if (loading) return <Spinner animation="border" />;
-    if (error) return <NotFound />;
-
-    const getArticleDate = (dateString) => {
-        const articleDate = new Date(dateString);
-
-        const year = articleDate.getFullYear();
-        const month = articleDate.getMonth() + 1;
-        const day = articleDate.getDate();
-
-        return `${year}-${month}-${day}`;
-    }
+  if (loading)
     return (
-        <Container>
-            <h1>{article.title}</h1>
-            <h5>
-                By <Link to={`/author/${article.author._id}`}>{article.author.fullName}</Link>
-            </h5>
-            <span className=' text-muted'>{getArticleDate(article.createdAt)}</span>
-            <p className='mt-2'>{article.content}</p>
-        </Container>
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" variant="primary" />
+      </div>
     );
+
+  if (error) return <NotFound />;
+
+  return (
+    <Container className="my-5">
+      <Card className="shadow-lg border-0 rounded-4 p-4">
+        <Card.Body>
+          <Card.Title className="display-5 fw-bold mb-3">
+            {article.title}
+          </Card.Title>
+          <Card.Subtitle className="mb-2 text-muted">
+            By{" "}
+            <Link to={`/author/${article.author._id}`} className="fw-semibold">
+              {article.author.fullName}
+            </Link>
+          </Card.Subtitle>
+          <small className="text-secondary">
+            {getFormattedDate(article.createdAt)}
+          </small>
+          <hr />
+          <Card.Text className="fs-5 lh-lg mt-3">{article.content}</Card.Text>
+        </Card.Body>
+      </Card>
+    </Container>
+  );
 }
 
 export default Article;
